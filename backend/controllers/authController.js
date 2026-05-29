@@ -3,6 +3,7 @@ const bcrypt=require('bcryptjs');
 const jwt=require('jsonwebtoken');
 const sendEmail=require('../utils/sendEmail');
 const  dotenv=require('dotenv');
+dotenv.config();
 
 
 //generate JWT token
@@ -56,21 +57,20 @@ const registerUser=async(req,res)=>{
 
       const message=`Your OTP for email confirmation is: ${otp}`;
       //send OTP to user's email
-      await sendEmail(email,"Welcome to ShopSphere - Email Confirmation",message);
-      
+      try{
+        await sendEmail(email,"Welcome to ShopSphere - Email Confirmation",message);
+      } catch (emailError){
+        console.error('Error sending welcome email:', emailError);
+      }
 
-      res.status(201).json({
+      return res.status(201).json({
         _id:user._id,
         name:user.name,
         email:user.email,
         token:generateToken(user._id)
-
-      })
+      });
     }
     
-    res.status(201).json({
-      message:"User registered successfully"
-    });
 
 
 
